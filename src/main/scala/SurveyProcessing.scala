@@ -20,10 +20,11 @@ class SurveyProcessing(surveyDataFrame: DataFrame, spark: SparkSession) {
 
   def createAgeGenderView(): Dataset[AgeGenderView] = {
     import spark.implicits._
-    surveyDataFrame.withColumn("Gender", explode(split($"Gender", ";")))
-      .groupBy("Gender").agg(avg("Age1stCode").as("avg"))
-      .orderBy(desc("avg"))
-      .as[AgeGenderView]
+    surveyDataFrame
+      .withColumn("Gender", explode(split($"Gender", ";")))
+      .groupBy("Gender")
+      .agg(avg("Age1stCode").as("avg"))
+      .orderBy(desc("avg")).as[AgeGenderView]
   }
 
   def createPercentageDevStudentsView(): Dataset[PercentageDevStudentsView] = ???
