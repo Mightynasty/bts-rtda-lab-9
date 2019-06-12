@@ -11,10 +11,10 @@ class SurveyProcessingTest extends FunSuite with DatasetSuiteBase {
   }
 
   test("Test functionality: how many programmers participated in the survey?"){
-    val surveyDataFrame = readFromTestFile();
-    val  expectedDeveloperCount: Long =  88883;
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
-    val realDeveloperCount: Long = surveyProcessing.developerCount();
+    val surveyDataFrame = readFromTestFile()
+    val  expectedDeveloperCount: Long =  88883
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
+    val realDeveloperCount: Long = surveyProcessing.developerCount()
     assert(realDeveloperCount == expectedDeveloperCount)
   }
 
@@ -39,8 +39,8 @@ class SurveyProcessingTest extends FunSuite with DatasetSuiteBase {
     val expectedOpenSourcePercentageView: Dataset[DeveloperOpenSourcePercentageView] =
       sc.parallelize(expectedOpenSourcePercentageSeq).toDS()
 
-    val surveyDataFrame = readFromTestFile();
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
     val realDevelopOpenSourcePercentageView: Dataset[DeveloperOpenSourcePercentageView] =
       surveyProcessing.createDeveloperOpenSourcePercentageView()
 
@@ -55,10 +55,10 @@ class SurveyProcessingTest extends FunSuite with DatasetSuiteBase {
       AgeGenderView("Non-binary, genderqueer, or gender non-conforming", 14.308884297520661)
     )
 
-    val surveyDataFrame = readFromTestFile();
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
 
-    val realPercentage = surveyProcessing.createAgeGenderView();
+    val realPercentage = surveyProcessing.createAgeGenderView()
 
     assert(expectedPercentage, realPercentage.take(4))
   }
@@ -69,29 +69,14 @@ class SurveyProcessingTest extends FunSuite with DatasetSuiteBase {
       AvgProfessionalCodingExperienceView("Engineering manager", 12.925037859666835)
     )
 
-    val surveyDataFrame = readFromTestFile();
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
 
-    val realAvg = surveyProcessing.createAvgProfessionalCodingExperienceView();
+    val realAvg = surveyProcessing.createAvgProfessionalCodingExperienceView()
 
     assert(expectedAvg, realAvg.take(2))
   }
 
-  test("Percentage of developers that are Students") {
-    val expectedPercentage = Array(
-      PercentageDevStudentsView("No", 65816, 74.04790567375089),
-      PercentageDevStudentsView("Yes, full-time", 15769,  17.741300361148927),
-      PercentageDevStudentsView("Yes, part-time", 5429,  6.108029656964773),
-      PercentageDevStudentsView("NA", 1869,  2.102764308135414)
-    )
-
-    val surveyDataFrame = readFromTestFile();
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
-
-    val realPercentage = surveyProcessing.createPercentageDevStudentsView();
-
-    assert(expectedPercentage, realPercentage.take(4))
-  }
 
   test("Percentage of developers by race and ethnicity") {
     val expectedAvg = Array(
@@ -99,10 +84,10 @@ class SurveyProcessingTest extends FunSuite with DatasetSuiteBase {
       PercentageByEthnicityView("NA", 12215, 12.79861693210394)
     )
 
-    val surveyDataFrame = readFromTestFile();
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
 
-    val realAvg = surveyProcessing.createPercentageByEthnicityView();
+    val realAvg = surveyProcessing.createPercentageByEthnicityView()
 
     assert(expectedAvg, realAvg.take(2))
   }
@@ -113,17 +98,59 @@ class SurveyProcessingTest extends FunSuite with DatasetSuiteBase {
       PercentageSocialMediaView("YouTube", 13830, 15.55978083548035)
     )
 
-    val surveyDataFrame = readFromTestFile();
-    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark);
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
 
-    val realAvg = surveyProcessing.createPercentageSocialMediaView();
+    val realAvg = surveyProcessing.createPercentageSocialMediaView()
 
     assert(expectedAvg, realAvg.take(2))
   }
 
-  def datasetsAreEquals[T](d1: Dataset[T], d2: Dataset[T]): Boolean ={
-    val d1_prime = d1.groupBy().count()
-    val d2_prime = d2.groupBy().count()
-    d1_prime.intersect(d2_prime).count() == d2_prime.intersect(d1_prime).count()
+  test("Age average by Country") {
+    val expectedAvg = Array(
+      AgeCountryView("Papua New Guinea", 63.0),
+      AgeCountryView("Saint Kitts and Nevis", 57.0)
+    )
+
+
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
+
+    val realAvg = surveyProcessing.createAvgAgeByCountry()
+
+    assert(expectedAvg, realAvg.take(2))
   }
-}
+
+  test("Percentage of programmers by language") {
+    val expectedAvg = Array(
+      PercentageByLanguageView("JavaScript", 59219, 13.403452545046726),
+      PercentageByLanguageView("HTML/CSS", 55466, 12.554009673644636)
+    )
+
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
+
+    val realAvg = surveyProcessing.createPercentageLanguageView()
+
+    assert(expectedAvg, realAvg.take(2))
+  }
+
+  test("Percentage of programmers by platforms") {
+    val expectedAvg = Array(
+      PercentageByPlatform("Linux", 42753, 15.479729313834467),
+      PercentageByPlatform("Windows", 40630, 14.71104722524956)
+    )
+
+    val surveyDataFrame = readFromTestFile()
+    val surveyProcessing: SurveyProcessing = new SurveyProcessing(surveyDataFrame, spark)
+    val realAvg = surveyProcessing.createPercentagePlatformView()
+
+    assert(expectedAvg, realAvg.take(2))
+  }
+
+    def datasetsAreEquals[T](d1: Dataset[T], d2: Dataset[T]): Boolean = {
+      val d1_prime = d1.groupBy().count()
+      val d2_prime = d2.groupBy().count()
+      d1_prime.intersect(d2_prime).count() == d2_prime.intersect(d1_prime).count()
+    }
+  }
